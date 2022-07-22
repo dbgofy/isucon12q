@@ -1,4 +1,4 @@
-alter table tenant_id_idx add index IX_tenant_competition_player_created_at(tenant_id, competition_id, player_id, created_at);
+alter table visit_history add index IX_tenant_competition_player_created_at(tenant_id, competition_id, player_id, created_at);
 
 CREATE TABLE competition (
   id VARCHAR(255) NOT NULL PRIMARY KEY,
