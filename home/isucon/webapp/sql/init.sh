@@ -20,6 +20,7 @@ mysql -u"$ISUCON_DB_USER" \
 rm -f ../tenant_db/*.db
 cp -r ../../initial_data/*.db ../tenant_db/
 
+./sqlite3-to-sql ../tenant_db/1.db > 1.db.dump
 cat 1.db.dump | grep 'INSERT INTO player_score' | sed 's/^.*VALUES\|;$/"/g' | xargs -n10000 | tr ' ' ',' | sed 's/^/INSERT INTO player_score VALUES /' | sed 's/$/;/' > insert1_player_score.sql
 cat 1.db.dump | grep -v 'INSERT INTO player_score' > insert1.sql
 mysql -u"$ISUCON_DB_USER" \
