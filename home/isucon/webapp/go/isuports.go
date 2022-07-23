@@ -351,6 +351,14 @@ func retrievePlayer(ctx context.Context, tenantDB dbOrTx, tenantId int64, id str
 	return &p, nil
 }
 
+func retrievePlayers(ctx context.Context, tenantDB dbOrTx, tenantId int64) ([]*PlayerRow, error) {
+	var players []*PlayerRow
+	if err := tenantDB.SelectContext(ctx, &players, "SELECT * FROM player WHERE tenant_id = ?", tenantId); err != nil {
+		return nil, fmt.Errorf("error Select player: tenantId=%d, %w", tenantId, err)
+	}
+	return players, nil
+}
+
 // 参加者を認可する
 // 参加者向けAPIで呼ばれる
 func authorizePlayer(ctx context.Context, tenantDB dbOrTx, tenantId int64, id string) error {
@@ -1043,6 +1051,18 @@ func competitionScoreHandler(c echo.Context) error {
 	}
 	defer fl.Close()
 	var rowNum int64
+
+	players, err := retrievePlayers(ctx, tenantDB, v.tenantID)
+	if err != nil {
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			fmt.Sprintf("retrievePlayers: %s", err.Error()),
+		)
+	}
+	idsMap := make(map[string]struct{})
+	for _, player := range players {
+		idsMap[player.ID] = struct{}{}
+	}
 	playerScoreRows := []PlayerScoreRow{}
 	for {
 		rowNum++
@@ -1057,15 +1077,13 @@ func competitionScoreHandler(c echo.Context) error {
 			return fmt.Errorf("row must have two columns: %#v", row)
 		}
 		playerID, scoreStr := row[0], row[1]
-		if _, err := retrievePlayer(ctx, tenantDB, v.tenantID, playerID); err != nil {
+
+		if _, ok := idsMap[playerID]; !ok {
 			// 存在しない参加者が含まれている
-			if errors.Is(err, sql.ErrNoRows) {
-				return echo.NewHTTPError(
-					http.StatusBadRequest,
-					fmt.Sprintf("player not found: %s", playerID),
-				)
-			}
-			return fmt.Errorf("error retrievePlayer: %w", err)
+			return echo.NewHTTPError(
+				http.StatusBadRequest,
+				fmt.Sprintf("player not found: %s", playerID),
+			)
 		}
 		var score int64
 		if score, err = strconv.ParseInt(scoreStr, 10, 64); err != nil {
@@ -1380,6 +1398,14 @@ func competitionRankingHandler(c echo.Context) error {
 	}
 	ranks := make([]CompetitionRank, 0, len(pss))
 	scoredPlayerSet := make(map[string]struct{}, len(pss))
+	players, err := retrievePlayers(ctx, tenantDB, tenant.ID)
+	if err != nil {
+		return err
+	}
+	playersMap := make(map[string]*PlayerRow)
+	for _, player := range players {
+		playersMap[player.ID] = player
+	}
 	for _, ps := range pss {
 		// player_scoreが同一player_id内ではrow_numの降順でソートされているので
 		// 現れたのが2回目以降のplayer_idはより大きいrow_numでスコアが出ているとみなせる
@@ -1387,9 +1413,9 @@ func competitionRankingHandler(c echo.Context) error {
 			continue
 		}
 		scoredPlayerSet[ps.PlayerID] = struct{}{}
-		p, err := retrievePlayer(ctx, tenantDB, ps.TenantID, ps.PlayerID)
-		if err != nil {
-			return fmt.Errorf("error retrievePlayer: %w", err)
+		p, ok := playersMap[ps.PlayerID]
+		if !ok {
+			return fmt.Errorf("not found player, playerID: %s", ps.PlayerID)
 		}
 		ranks = append(ranks, CompetitionRank{
 			Score:             ps.Score,
