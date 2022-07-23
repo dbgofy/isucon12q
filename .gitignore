@@ -145,3 +145,13 @@
 /etc/nginx/sites-available/*
 !/etc/nginx/sites-available/isuports.conf
 
+# /home/isucon/webapp/insert.sql
+/*
+!/home
+/home/*
+!/home/isucon
+/home/isucon/*
+!/home/isucon/webapp
+/home/isucon/webapp/*
+!/home/isucon/webapp/insert.sql
+

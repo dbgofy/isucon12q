@@ -50,8 +50,10 @@
 0644:0:0:home/isucon/webapp/go/cmd/isuports/main.go
 0644:0:0:home/isucon/webapp/go/go.mod
 0644:0:0:home/isucon/webapp/go/go.sum
+0644:0:0:home/isucon/webapp/go/initialize.go
 0644:0:0:home/isucon/webapp/go/isuports.go
 0644:0:0:home/isucon/webapp/go/sqltrace.go
+0644:0:0:home/isucon/webapp/insert.sql
 0775:1001:1001:home/isucon/webapp/sql/admin
 0775:1001:1001:home/isucon/webapp/sql
 0644:0:0:home/isucon/webapp/sql/admin/01_create_mysql_database.sql
