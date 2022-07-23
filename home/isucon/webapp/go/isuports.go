@@ -522,28 +522,39 @@ type VisitHistoryRow struct {
 type VisitHistorySummaryRow struct {
 	PlayerID     string `db:"player_id"`
 	MinCreatedAt int64  `db:"min_created_at"`
+
+	TenantID      int64  `db:"tenant_id"`
+	CompetitionID string `db:"competition_id"`
 }
 
 // 大会ごとの課金レポートを計算する
-func billingReportByCompetition(ctx context.Context, tenantDB dbOrTx, tenantID int64, competitonID string) (*BillingReport, error) {
+func billingReportByCompetition(ctx context.Context, tenantDB dbOrTx, tenantID int64, competitonID string, vhs []VisitHistorySummaryRow) (*BillingReport, error) {
 	comp, err := retrieveCompetition(ctx, tenantDB, tenantID, competitonID)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieveCompetition: %w", err)
 	}
 
 	// ランキングにアクセスした参加者のIDを取得する
-	vhs := []VisitHistorySummaryRow{}
-	if err := adminDB.SelectContext(
-		ctx,
-		&vhs,
-		"SELECT player_id, MIN(created_at) AS min_created_at FROM visit_history WHERE tenant_id = ? AND competition_id = ? GROUP BY player_id",
-		tenantID,
-		comp.ID,
-	); err != nil && err != sql.ErrNoRows {
-		return nil, fmt.Errorf("error Select visit_history: tenantID=%d, competitionID=%s, %w", tenantID, comp.ID, err)
+	if vhs == nil {
+		if err := adminDB.SelectContext(
+			ctx,
+			&vhs,
+			"SELECT player_id, MIN(created_at) AS min_created_at, tenant_id, competition_id FROM visit_history WHERE tenant_id = ? AND competition_id = ? GROUP BY tenant_id, competition_id, player_id",
+			tenantID,
+			comp.ID,
+		); err != nil && err != sql.ErrNoRows {
+			return nil, fmt.Errorf("error Select visit_history: tenantID=%d, competitionID=%s, %w", tenantID, comp.ID, err)
+		}
+	}
+	if len(vhs) == 0 {
+		return nil, fmt.Errorf("error Select visit_history: tenantID=%d, competitionID=%s, %w", tenantID, comp.ID, errors.New("vhs is empty"))
 	}
 	billingMap := map[string]string{}
 	for _, vh := range vhs {
+		if vh.TenantID != tenantID || vh.CompetitionID != competitonID {
+			continue
+		}
+
 		// competition.finished_atよりもあとの場合は、終了後に訪問したとみなして大会開催内アクセス済みとみなさない
 		if comp.FinishedAt.Valid && comp.FinishedAt.Int64 < vh.MinCreatedAt {
 			continue
@@ -648,6 +659,16 @@ func tenantsBillingHandler(c echo.Context) error {
 	if err := adminDB.SelectContext(ctx, &ts, "SELECT * FROM tenant ORDER BY id DESC"); err != nil {
 		return fmt.Errorf("error Select tenant: %w", err)
 	}
+
+	vhs := []VisitHistorySummaryRow{}
+	if err := adminDB.SelectContext(
+		ctx,
+		&vhs,
+		"SELECT player_id, MIN(created_at) AS min_created_at, tenant_id, competition_id FROM visit_history GROUP BY tenant_id, competition_id, player_id",
+	); err != nil && err != sql.ErrNoRows {
+		return fmt.Errorf("error Select visit_history: %w", err)
+	}
+
 	tenantBillings := make([]TenantWithBilling, 0, len(ts))
 	for _, t := range ts {
 		if beforeID != 0 && beforeID <= t.ID {
@@ -674,7 +695,7 @@ func tenantsBillingHandler(c echo.Context) error {
 				return fmt.Errorf("failed to Select competition: %w", err)
 			}
 			for _, comp := range cs {
-				report, err := billingReportByCompetition(ctx, tenantDB, t.ID, comp.ID)
+				report, err := billingReportByCompetition(ctx, tenantDB, t.ID, comp.ID, vhs)
 				if err != nil {
 					return fmt.Errorf("failed to billingReportByCompetition: %w", err)
 				}
@@ -1159,7 +1180,7 @@ func billingHandler(c echo.Context) error {
 	}
 	tbrs := make([]BillingReport, 0, len(cs))
 	for _, comp := range cs {
-		report, err := billingReportByCompetition(ctx, tenantDB, v.tenantID, comp.ID)
+		report, err := billingReportByCompetition(ctx, tenantDB, v.tenantID, comp.ID, nil)
 		if err != nil {
 			return fmt.Errorf("error billingReportByCompetition: %w", err)
 		}
