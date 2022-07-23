@@ -1,17 +1,17 @@
-# isucon-boilerplate
+# isucon12q
 
 ## usage
 
 ### initialize
 
-#### create a new repository
+#### ~create a new repository~ already done
 
 Create a new repository from https://github.com/bgpat/isucon-boilerplate/generate.
 
 #### add members
 
-Invite your team members from https://github.com/$GITHUB_REPOSITORY/settings/access.
-After them have confirmed, run [Update SSH Keys](https://github.com/$GITHUB_REPOSITORY/actions?query=workflow%3A%22Update+SSH+Keys%22).
+Invite your team members from https://github.com/dbgofy/isucon12q/settings/access.
+After them have confirmed, run [Update SSH Keys](https://github.com/dbgofy/isucon12q/actions?query=workflow%3A%22Update+SSH+Keys%22).
 
 #### generate and register ssh deploy key
 
@@ -29,7 +29,7 @@ Run following commands in the each competition server:
 ```bash
 cd /
 git init
-git remote add origin git@github.com:$GITHUB_REPOSITORY.git
+git remote add origin git@github.com:dbgofy/isucon12q.git
 git fetch origin master
 git reset --hard FETCH_HEAD
 make
