@@ -45,3 +45,15 @@
 /home/isucon/webapp/sql/admin/*
 !/home/isucon/webapp/sql/admin/10_schema.sql
 
+# /home/isucon/webapp/sql/init.sh
+/*
+!/home
+/home/*
+!/home/isucon
+/home/isucon/*
+!/home/isucon/webapp
+/home/isucon/webapp/*
+!/home/isucon/webapp/sql
+/home/isucon/webapp/sql/*
+!/home/isucon/webapp/sql/init.sh
+
