@@ -12,6 +12,8 @@
 0755:0:0:etc/mysql
 0755:0:0:etc
 0644:0:0:etc/mysql/mysql.conf.d/mysqld.cnf
+0755:0:0:etc/nginx
+0644:0:0:etc/nginx/nginx.conf
 0755:0:0:etc/prometheus
 0644:0:0:etc/prometheus/hosts.json
 0644:0:0:etc/prometheus/prometheus.yml
@@ -48,6 +50,7 @@
 0775:1001:1001:home/isucon/webapp/sql
 0644:0:0:home/isucon/webapp/sql/admin/01_create_mysql_database.sql
 0644:0:0:home/isucon/webapp/sql/admin/10_schema.sql
+0644:0:0:home/isucon/webapp/sql/admin/20_alter.sql
 0755:0:0:home/isucon/webapp/sql/init.sh
 0644:0:0:home/isucon/webapp/sql/init.sql
 0755:0:0:home/isucon/webapp/sql/sqlite3-to-sql
