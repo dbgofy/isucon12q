@@ -392,7 +392,11 @@ func retrieveCompetition(ctx context.Context, tenantDB dbOrTx, id string) (*Comp
 // 大会を取得する(id複数)
 func retrieveCompetitions(ctx context.Context, tenantDB dbOrTx, ids []string) ([]*CompetitionRow, error) {
 	var c []*CompetitionRow
-	if err := tenantDB.SelectContext(ctx, &c, "SELECT * FROM competition WHERE id IN (?)", ids); err != nil {
+	query, params, err := sqlx.In("SELECT * FROM competition WHERE id IN (?)", ids)
+	if err != nil {
+		return nil, err
+	}
+	if err := tenantDB.SelectContext(ctx, &c, query, params...); err != nil {
 		return nil, fmt.Errorf("error Select competition: id=%v, %w", ids, err)
 	}
 	return c, nil
