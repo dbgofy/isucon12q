@@ -47,6 +47,8 @@
 0775:1001:1001:home/isucon/webapp/sql/init.sh
 0664:1001:1001:home/isucon/webapp/sql/init.sql
 0775:1001:1001:home/isucon/webapp/sql/sqlite3-to-sql
+0775:1001:1001:home/isucon/webapp/sql/tenant
+0664:1001:1001:home/isucon/webapp/sql/tenant/10_schema.sql
 0700:0:0:root/.ssh
 0700:0:0:root
 0644:0:0:root/.ssh/authorized_keys

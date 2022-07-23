@@ -81,3 +81,17 @@
 /home/isucon/webapp/sql/*
 !/home/isucon/webapp/sql/sqlite3-to-sql
 
+# /home/isucon/webapp/sql/tenant/10_schema.sql
+/*
+!/home
+/home/*
+!/home/isucon
+/home/isucon/*
+!/home/isucon/webapp
+/home/isucon/webapp/*
+!/home/isucon/webapp/sql
+/home/isucon/webapp/sql/*
+!/home/isucon/webapp/sql/tenant
+/home/isucon/webapp/sql/tenant/*
+!/home/isucon/webapp/sql/tenant/10_schema.sql
+
