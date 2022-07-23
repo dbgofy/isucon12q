@@ -14,6 +14,8 @@
 0644:0:0:etc/mysql/mysql.conf.d/mysqld.cnf
 0755:0:0:etc/nginx
 0644:0:0:etc/nginx/nginx.conf
+0755:0:0:etc/nginx/sites-available
+0644:0:0:etc/nginx/sites-available/isuports.conf
 0755:0:0:etc/prometheus
 0644:0:0:etc/prometheus/hosts.json
 0644:0:0:etc/prometheus/prometheus.yml
@@ -42,9 +44,9 @@
 0775:1001:1001:home/isucon/webapp/go/cmd/isuports
 0775:1001:1001:home/isucon/webapp/go/cmd
 0664:1001:1001:home/isucon/webapp/go/cmd/isuports/main.go
-0664:1001:1001:home/isucon/webapp/go/go.mod
-0664:1001:1001:home/isucon/webapp/go/go.sum
-0664:1001:1001:home/isucon/webapp/go/isuports.go
+0644:0:0:home/isucon/webapp/go/go.mod
+0644:0:0:home/isucon/webapp/go/go.sum
+0644:0:0:home/isucon/webapp/go/isuports.go
 0664:1001:1001:home/isucon/webapp/go/sqltrace.go
 0775:1001:1001:home/isucon/webapp/sql/admin
 0775:1001:1001:home/isucon/webapp/sql
