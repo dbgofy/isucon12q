@@ -38,7 +38,7 @@
 0664:1001:1001:home/isucon/webapp/docker-compose-go.yml
 0775:1001:1001:home/isucon/webapp/go
 0664:1001:1001:home/isucon/webapp/go/Dockerfile
-0664:1001:1001:home/isucon/webapp/go/Makefile
+0644:0:0:home/isucon/webapp/go/Makefile
 0775:1001:1001:home/isucon/webapp/go/cmd/isuports
 0775:1001:1001:home/isucon/webapp/go/cmd
 0664:1001:1001:home/isucon/webapp/go/cmd/isuports/main.go
@@ -60,3 +60,4 @@
 0644:0:0:root/.profile
 0700:0:0:root/.ssh
 0644:0:0:root/.ssh/authorized_keys
+0644:0:0:root/kataribe.toml
