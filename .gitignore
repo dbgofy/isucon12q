@@ -135,3 +135,13 @@
 /root/*
 !/root/kataribe.toml
 
+# /etc/nginx/sites-available/isuports.conf
+/*
+!/etc
+/etc/*
+!/etc/nginx
+/etc/nginx/*
+!/etc/nginx/sites-available
+/etc/nginx/sites-available/*
+!/etc/nginx/sites-available/isuports.conf
+
