@@ -343,12 +343,12 @@ func retrievePlayer(ctx context.Context, tenantDB dbOrTx, tenantId int64, id str
 	return &p, nil
 }
 
-func retrievePlayerIDs(ctx context.Context, tenantDB dbOrTx, tenantId int64) ([]string, error) {
-	var ids []string
-	if err := tenantDB.SelectContext(ctx, &ids, "SELECT id FROM player WHERE tenant_id = ?", tenantId); err != nil {
+func retrievePlayers(ctx context.Context, tenantDB dbOrTx, tenantId int64) ([]*PlayerRow, error) {
+	var players []*PlayerRow
+	if err := tenantDB.SelectContext(ctx, &players, "SELECT * FROM player WHERE tenant_id = ?", tenantId); err != nil {
 		return nil, fmt.Errorf("error Select player: tenantId=%d, %w", tenantId, err)
 	}
-	return ids, nil
+	return players, nil
 }
 
 // 参加者を認可する
@@ -1044,16 +1044,16 @@ func competitionScoreHandler(c echo.Context) error {
 	defer fl.Close()
 	var rowNum int64
 
-	ids, err := retrievePlayerIDs(ctx, tenantDB, v.tenantID)
+	players, err := retrievePlayers(ctx, tenantDB, v.tenantID)
 	if err != nil {
 		return echo.NewHTTPError(
 			http.StatusBadRequest,
-			fmt.Sprintf("retrievePlayerIDs: %s", err.Error()),
+			fmt.Sprintf("retrievePlayers: %s", err.Error()),
 		)
 	}
 	idsMap := make(map[string]struct{})
-	for _, id := range ids {
-		idsMap[id] = struct{}{}
+	for _, player := range players {
+		idsMap[player.ID] = struct{}{}
 	}
 	playerScoreRows := []PlayerScoreRow{}
 	for {
