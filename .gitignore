@@ -95,3 +95,13 @@
 /home/isucon/webapp/sql/tenant/*
 !/home/isucon/webapp/sql/tenant/10_schema.sql
 
+# /home/isucon/webapp/docker-compose-go.yml
+/*
+!/home
+/home/*
+!/home/isucon
+/home/isucon/*
+!/home/isucon/webapp
+/home/isucon/webapp/*
+!/home/isucon/webapp/docker-compose-go.yml
+
