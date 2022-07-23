@@ -121,7 +121,7 @@ regexp = '^POST /api/organizer/competition/[^/]+/score'
 name = 'POST /api/organizer/competition/:competition_id/score'
 
 [[bundle]]
-regexp = '^GET /api/player/player/*'
+regexp = '^GET /api/player/player/'
 name = 'GET /api/player/player/:player_id'
 
 [[bundle]]
@@ -138,7 +138,7 @@ name = 'GET /api/player/competition/:competition_id/ranking'
 # For overview of regexp syntax: https://golang.org/pkg/regexp/syntax/
 #
 [[replace]]
-regexp = '/api/debug/*'
+regexp = '/api/debug/'
 replace = ''
 #
 #[[replace]]
