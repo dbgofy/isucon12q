@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/pprof"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -101,7 +102,8 @@ func SetCacheControlPrivate(next echo.HandlerFunc) echo.HandlerFunc {
 // Run は cmd/isuports/main.go から呼ばれるエントリーポイントです
 func Run() {
 	e := echo.New()
-	e.Logger.SetLevel(log.OFF)
+	e.Debug = true
+	e.Logger.SetLevel(log.DEBUG)
 
 	var (
 		sqlLogger io.Closer
@@ -120,6 +122,13 @@ func Run() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(SetCacheControlPrivate)
+
+	pprofGroup := e.Group("/api/debug/pprof")
+	pprofGroup.Any("/cmdline", echo.WrapHandler(http.HandlerFunc(pprof.Cmdline)))
+	pprofGroup.Any("/profile", echo.WrapHandler(http.HandlerFunc(pprof.Profile)))
+	pprofGroup.Any("/symbol", echo.WrapHandler(http.HandlerFunc(pprof.Symbol)))
+	pprofGroup.Any("/trace", echo.WrapHandler(http.HandlerFunc(pprof.Trace)))
+	pprofGroup.Any("/*", echo.WrapHandler(http.HandlerFunc(pprof.Index)))
 
 	// SaaS管理者向けAPI
 	e.POST("/api/admin/tenants/add", tenantsAddHandler)
@@ -660,7 +669,7 @@ func tenantsBillingHandler(c echo.Context) error {
 	if err := adminDB.SelectContext(
 		ctx,
 		&vhs,
-		"SELECT player_id, MIN(created_at) AS min_created_at, tenant_id, competition_id FROM visit_history GROUP BY enant_id, competition_id, player_id",
+		"SELECT player_id, MIN(created_at) AS min_created_at, tenant_id, competition_id FROM visit_history GROUP BY tenant_id, competition_id, player_id",
 		tenantID,
 		comp.ID,
 	); err != nil && err != sql.ErrNoRows {
