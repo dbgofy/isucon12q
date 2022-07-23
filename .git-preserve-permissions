@@ -10,6 +10,7 @@
 0644:0:0:README.md
 0755:0:0:etc/prometheus
 0755:0:0:etc
+0644:0:0:etc/prometheus/hosts.json
 0644:0:0:etc/prometheus/prometheus.yml
 0755:0:0:files
 0644:0:0:files/gitignore
@@ -28,6 +29,17 @@
 0755:0:0:home
 0644:1001:1001:home/isucon/.bashrc
 0644:0:0:home/isucon/.bashrc.backup
+0775:1001:1001:home/isucon/webapp/go
+0775:1001:1001:home/isucon/webapp
+0664:1001:1001:home/isucon/webapp/go/Dockerfile
+0664:1001:1001:home/isucon/webapp/go/Makefile
+0775:1001:1001:home/isucon/webapp/go/cmd/isuports
+0775:1001:1001:home/isucon/webapp/go/cmd
+0664:1001:1001:home/isucon/webapp/go/cmd/isuports/main.go
+0664:1001:1001:home/isucon/webapp/go/go.mod
+0664:1001:1001:home/isucon/webapp/go/go.sum
+0664:1001:1001:home/isucon/webapp/go/isuports.go
+0664:1001:1001:home/isucon/webapp/go/sqltrace.go
 0700:0:0:root/.ssh
 0700:0:0:root
-0600:0:0:root/.ssh/authorized_keys
+0644:0:0:root/.ssh/authorized_keys
