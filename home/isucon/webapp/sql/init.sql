@@ -2,3 +2,7 @@ DELETE FROM tenant WHERE id > 100;
 DELETE FROM visit_history WHERE created_at >= '1654041600';
 UPDATE id_generator SET id=2678400000 WHERE stub='a';
 ALTER TABLE id_generator AUTO_INCREMENT=2678400000;
+
+DELETE FROM player WHERE created_at > 1658524520; -- Sat Jul 23 06:15:20 JST 2022
+DELETE FROM player_score WHERE created_at > 1658524520; -- Sat Jul 23 06:15:20 JST 2022
+DELETE FROM competition WHERE created_at > 1658524520; -- Sat Jul 23 06:15:20 JST 2022
