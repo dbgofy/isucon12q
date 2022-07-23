@@ -17,3 +17,17 @@
 /home/isucon/*
 !/home/isucon/.bashrc
 
+# /home/isucon/webapp/sql/admin/01_create_mysql_database.sql
+/*
+!/home
+/home/*
+!/home/isucon
+/home/isucon/*
+!/home/isucon/webapp
+/home/isucon/webapp/*
+!/home/isucon/webapp/sql
+/home/isucon/webapp/sql/*
+!/home/isucon/webapp/sql/admin
+/home/isucon/webapp/sql/admin/*
+!/home/isucon/webapp/sql/admin/01_create_mysql_database.sql
+

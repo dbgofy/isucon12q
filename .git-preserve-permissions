@@ -40,6 +40,9 @@
 0664:1001:1001:home/isucon/webapp/go/go.sum
 0664:1001:1001:home/isucon/webapp/go/isuports.go
 0664:1001:1001:home/isucon/webapp/go/sqltrace.go
+0775:1001:1001:home/isucon/webapp/sql/admin
+0775:1001:1001:home/isucon/webapp/sql
+0664:1001:1001:home/isucon/webapp/sql/admin/01_create_mysql_database.sql
 0700:0:0:root/.ssh
 0700:0:0:root
 0644:0:0:root/.ssh/authorized_keys
