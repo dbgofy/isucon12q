@@ -1,0 +1,1 @@
+alter table tenant_id_idx add index IX_tenant_competition_player_created_at(tenant_id, competition_id, player_id, created_at);
