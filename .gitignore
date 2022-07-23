@@ -115,3 +115,9 @@
 /etc/mysql/mysql.conf.d/*
 !/etc/mysql/mysql.conf.d/mysqld.cnf
 
+# /root/.profile
+/*
+!/root
+/root/*
+!/root/.profile
+
