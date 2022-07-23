@@ -45,6 +45,7 @@
 0664:1001:1001:home/isucon/webapp/sql/admin/01_create_mysql_database.sql
 0664:1001:1001:home/isucon/webapp/sql/admin/10_schema.sql
 0775:1001:1001:home/isucon/webapp/sql/init.sh
+0664:1001:1001:home/isucon/webapp/sql/init.sql
 0700:0:0:root/.ssh
 0700:0:0:root
 0644:0:0:root/.ssh/authorized_keys
