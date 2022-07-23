@@ -1245,29 +1245,23 @@ func playerHandler(c echo.Context) error {
 		return fmt.Errorf("error flockByTenantID: %w", err)
 	}
 	defer fl.Close()
-	pss := make([]PlayerScoreRow, 0, len(cs))
-	for _, c := range cs {
-		ps := PlayerScoreRow{}
-		if err := tenantDB.GetContext(
-			ctx,
-			&ps,
-			// 最後にCSVに登場したスコアを採用する = row_numが一番大きいもの
-			"SELECT * FROM player_score WHERE tenant_id = ? AND competition_id = ? AND player_id = ? ORDER BY row_num DESC LIMIT 1",
-			v.tenantID,
-			c.ID,
-			p.ID,
-		); err != nil {
-			// 行がない = スコアが記録されてない
-			if errors.Is(err, sql.ErrNoRows) {
-				continue
-			}
-			return fmt.Errorf("error Select player_score: tenantID=%d, competitionID=%s, playerID=%s, %w", v.tenantID, c.ID, p.ID, err)
-		}
-		pss = append(pss, ps)
+
+	type maxScoreType struct {
+		CompetitionID string `db:"competition_id"`
+		MaxScore      int64  `db:"max_score"`
+	}
+	var maxScores []maxScoreType
+	err = tenantDB.SelectContext(ctx, &maxScores,
+		"SELECT competition_id, max(score) as max_score FROM player_score WHERE tenant_id = ? AND player_id = ? GROUP BY tenant_id, player_id, competition_id",
+		v.tenantID,
+		p.ID,
+	)
+	if err != nil {
+		return fmt.Errorf("SELECT competition_id, max(score) : %w", err)
 	}
 
-	competitionIDs := make([]string, 0, len(pss))
-	for _, ps := range pss {
+	competitionIDs := make([]string, 0, len(maxScores))
+	for _, ps := range maxScores {
 		competitionIDs = append(competitionIDs, ps.CompetitionID)
 	}
 	comps, err := retrieveCompetitions(ctx, tenantDB, v.tenantID, competitionIDs)
@@ -1279,15 +1273,15 @@ func playerHandler(c echo.Context) error {
 		compsMap[comp.ID] = comp
 	}
 
-	psds := make([]PlayerScoreDetail, 0, len(pss))
-	for _, ps := range pss {
+	psds := make([]PlayerScoreDetail, 0, len(maxScores))
+	for _, ps := range maxScores {
 		comp, ok := compsMap[ps.CompetitionID]
 		if !ok {
 			return fmt.Errorf("not found CompetitionRow: CompetitionID: %s", ps.CompetitionID)
 		}
 		psds = append(psds, PlayerScoreDetail{
 			CompetitionTitle: comp.Title,
-			Score:            ps.Score,
+			Score:            ps.MaxScore,
 		})
 	}
 
