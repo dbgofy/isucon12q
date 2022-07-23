@@ -838,12 +838,12 @@ func playerDisqualifiedHandler(c echo.Context) error {
 	now := time.Now().Unix()
 	if _, err := tenantDB.ExecContext(
 		ctx,
-		"UPDATE player SET is_disqualified = ?, updated_at = ? WHERE id = ?",
-		true, now, playerID,
+		"UPDATE player SET is_disqualified = ?, updated_at = ? WHERE tenant_id = ? AND id = ?",
+		true, now, v.tenantID, playerID,
 	); err != nil {
 		return fmt.Errorf(
-			"error Update player: isDisqualified=%t, updatedAt=%d, id=%s, %w",
-			true, now, playerID, err,
+			"error Update player: isDisqualified=%t, updatedAt=%d, tenantId=%d, id=%s, %w",
+			true, now, v.tenantID, playerID, err,
 		)
 	}
 	p, err := retrievePlayer(ctx, tenantDB, v.tenantID, playerID)
