@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/pprof"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -121,6 +122,13 @@ func Run() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(SetCacheControlPrivate)
+
+	pprofGroup := e.Group("/api/debug/pprof")
+	pprofGroup.Any("/cmdline", echo.WrapHandler(http.HandlerFunc(pprof.Cmdline)))
+	pprofGroup.Any("/profile", echo.WrapHandler(http.HandlerFunc(pprof.Profile)))
+	pprofGroup.Any("/symbol", echo.WrapHandler(http.HandlerFunc(pprof.Symbol)))
+	pprofGroup.Any("/trace", echo.WrapHandler(http.HandlerFunc(pprof.Trace)))
+	pprofGroup.Any("/*", echo.WrapHandler(http.HandlerFunc(pprof.Index)))
 
 	// SaaS管理者向けAPI
 	e.POST("/api/admin/tenants/add", tenantsAddHandler)
