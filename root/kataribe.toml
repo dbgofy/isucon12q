@@ -101,6 +101,14 @@ duration_index = 10
 #name = 'GET /images/*'
 #
 [[bundle]]
+regexp = '^GET /api/admin/tenants/billing^'
+name = 'GET /api/admin/tenants/billing'
+
+[[bundle]]
+regexp = '^GET /api/admin/tenants/billing\?before=[\d]+'
+name = 'GET /api/admin/tenants/billing?before=:before_id'
+
+[[bundle]]
 regexp = '^POST /api/organizer/players/[^/]+/disqualified'
 name = 'POST /api/organizer/players/:player_id/disqualified'
 
