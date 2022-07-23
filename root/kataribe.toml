@@ -109,8 +109,8 @@ regexp = '^GET /api/admin/tenants/billing\?before=[\d]+'
 name = 'GET /api/admin/tenants/billing?before=:before_id'
 
 [[bundle]]
-regexp = '^POST /api/organizer/players/[^/]+/disqualified'
-name = 'POST /api/organizer/players/:player_id/disqualified'
+regexp = '^POST /api/organizer/player/[^/]+/disqualified'
+name = 'POST /api/organizer/player/:player_id/disqualified'
 
 [[bundle]]
 regexp = '^POST /api/organizer/competition/[^/]+/finish'
