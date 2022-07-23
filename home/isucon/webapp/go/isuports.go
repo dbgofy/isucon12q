@@ -560,6 +560,10 @@ func billingReportByCompetition(ctx context.Context, tenantDB dbOrTx, tenantID i
 	}
 	billingMap := map[string]string{}
 	for _, vh := range vhs {
+		if vh.TenantID != tenantID || vh.CompetitionID != competitonID {
+			continue
+		}
+
 		// competition.finished_atよりもあとの場合は、終了後に訪問したとみなして大会開催内アクセス済みとみなさない
 		if comp.FinishedAt.Valid && comp.FinishedAt.Int64 < vh.MinCreatedAt {
 			continue
