@@ -670,10 +670,8 @@ func tenantsBillingHandler(c echo.Context) error {
 		ctx,
 		&vhs,
 		"SELECT player_id, MIN(created_at) AS min_created_at, tenant_id, competition_id FROM visit_history GROUP BY tenant_id, competition_id, player_id",
-		tenantID,
-		comp.ID,
 	); err != nil && err != sql.ErrNoRows {
-		return nil, fmt.Errorf("error Select visit_history: tenantID=%d, competitionID=%s, %w", tenantID, comp.ID, err)
+		return fmt.Errorf("error Select visit_history: %w", err)
 	}
 
 	tenantBillings := make([]TenantWithBilling, 0, len(ts))
@@ -702,7 +700,7 @@ func tenantsBillingHandler(c echo.Context) error {
 				return fmt.Errorf("failed to Select competition: %w", err)
 			}
 			for _, comp := range cs {
-				report, err := billingReportByCompetition(ctx, tenantDB, t.ID, comp.ID)
+				report, err := billingReportByCompetition(ctx, tenantDB, t.ID, comp.ID, vhs)
 				if err != nil {
 					return fmt.Errorf("failed to billingReportByCompetition: %w", err)
 				}
@@ -1187,7 +1185,7 @@ func billingHandler(c echo.Context) error {
 	}
 	tbrs := make([]BillingReport, 0, len(cs))
 	for _, comp := range cs {
-		report, err := billingReportByCompetition(ctx, tenantDB, v.tenantID, comp.ID)
+		report, err := billingReportByCompetition(ctx, tenantDB, v.tenantID, comp.ID, nil)
 		if err != nil {
 			return fmt.Errorf("error billingReportByCompetition: %w", err)
 		}
