@@ -369,23 +369,23 @@ type CompetitionRow struct {
 }
 
 // 大会を取得する
-func retrieveCompetition(ctx context.Context, tenantDB dbOrTx, id string) (*CompetitionRow, error) {
+func retrieveCompetition(ctx context.Context, tenantDB dbOrTx, tenantId int64, id string) (*CompetitionRow, error) {
 	var c CompetitionRow
-	if err := tenantDB.GetContext(ctx, &c, "SELECT * FROM competition WHERE id = ?", id); err != nil {
-		return nil, fmt.Errorf("error Select competition: id=%s, %w", id, err)
+	if err := tenantDB.GetContext(ctx, &c, "SELECT * FROM competition WHERE tenant_id = ? AND id = ?", tenantId, id); err != nil {
+		return nil, fmt.Errorf("error Select competition: tenantId = %d, id=%s, %w", tenantId, id, err)
 	}
 	return &c, nil
 }
 
 // 大会を取得する(id複数)
-func retrieveCompetitions(ctx context.Context, tenantDB dbOrTx, ids []string) ([]*CompetitionRow, error) {
+func retrieveCompetitions(ctx context.Context, tenantDB dbOrTx, tenantId int64, ids []string) ([]*CompetitionRow, error) {
 	var c []*CompetitionRow
-	query, params, err := sqlx.In("SELECT * FROM competition WHERE id IN (?)", ids)
+	query, params, err := sqlx.In("SELECT * FROM competition WHERE tenant_id = ? AND id IN (?)", tenantId, ids)
 	if err != nil {
 		return nil, err
 	}
 	if err := tenantDB.SelectContext(ctx, &c, query, params...); err != nil {
-		return nil, fmt.Errorf("error Select competition: id=%v, %w", ids, err)
+		return nil, fmt.Errorf("error Select competition: tenantId = %d, id=%v, %w", tenantId, ids, err)
 	}
 	return c, nil
 }
@@ -519,7 +519,7 @@ type VisitHistorySummaryRow struct {
 
 // 大会ごとの課金レポートを計算する
 func billingReportByCompetition(ctx context.Context, tenantDB dbOrTx, tenantID int64, competitonID string) (*BillingReport, error) {
-	comp, err := retrieveCompetition(ctx, tenantDB, competitonID)
+	comp, err := retrieveCompetition(ctx, tenantDB, tenantID, competitonID)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieveCompetition: %w", err)
 	}
@@ -943,7 +943,7 @@ func competitionFinishHandler(c echo.Context) error {
 	if id == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "competition_id required")
 	}
-	_, err = retrieveCompetition(ctx, tenantDB, id)
+	_, err = retrieveCompetition(ctx, tenantDB, v.tenantID, id)
 	if err != nil {
 		// 存在しない大会
 		if errors.Is(err, sql.ErrNoRows) {
@@ -993,7 +993,7 @@ func competitionScoreHandler(c echo.Context) error {
 	if competitionID == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "competition_id required")
 	}
-	comp, err := retrieveCompetition(ctx, tenantDB, competitionID)
+	comp, err := retrieveCompetition(ctx, tenantDB, v.tenantID, competitionID)
 	if err != nil {
 		// 存在しない大会
 		if errors.Is(err, sql.ErrNoRows) {
@@ -1244,7 +1244,7 @@ func playerHandler(c echo.Context) error {
 	for _, ps := range pss {
 		competitionIDs = append(competitionIDs, ps.CompetitionID)
 	}
-	comps, err := retrieveCompetitions(ctx, tenantDB, competitionIDs)
+	comps, err := retrieveCompetitions(ctx, tenantDB, v.tenantID, competitionIDs)
 	if err != nil {
 		return fmt.Errorf("error retrieveCompetition: %w", err)
 	}
@@ -1321,7 +1321,7 @@ func competitionRankingHandler(c echo.Context) error {
 	}
 
 	// 大会の存在確認
-	competition, err := retrieveCompetition(ctx, tenantDB, competitionID)
+	competition, err := retrieveCompetition(ctx, tenantDB, v.tenantID, competitionID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return echo.NewHTTPError(http.StatusNotFound, "competition not found")
