@@ -955,12 +955,12 @@ func competitionFinishHandler(c echo.Context) error {
 	now := time.Now().Unix()
 	if _, err := tenantDB.ExecContext(
 		ctx,
-		"UPDATE competition SET finished_at = ?, updated_at = ? WHERE id = ?",
-		now, now, id,
+		"UPDATE competition SET finished_at = ?, updated_at = ? WHERE tenant_id = ? AND id = ?",
+		now, now, v.tenantID, id,
 	); err != nil {
 		return fmt.Errorf(
-			"error Update competition: finishedAt=%d, updatedAt=%d, id=%s, %w",
-			now, now, id, err,
+			"error Update competition: finishedAt=%d, updatedAt=%d, tenantId=%d, id=%s, %w",
+			now, now, v.tenantID, id, err,
 		)
 	}
 	return c.JSON(http.StatusOK, SuccessResult{Status: true})
